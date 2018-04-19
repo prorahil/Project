@@ -2,11 +2,12 @@ class Instructor < ApplicationRecord
   # relationships
   has_many :camp_instructors
   has_many :camps, through: :camp_instructors
+  belongs_to :user
 
   # validations
   validates_presence_of :first_name, :last_name
-  validates :email, presence: true, uniqueness: { case_sensitive: false}, format: { with: /\A[\w]([^@\s,;]+)@(([\w-]+\.)+(com|edu|org|net|gov|mil|biz|info))\z/i, message: "is not a valid format" }
-  validates :phone, format: { with: /\A\(?\d{3}\)?[-. ]?\d{3}[-.]?\d{4}\z/, message: "should be 10 digits (area code needed) and delimited with dashes only", allow_blank: true }
+  # validates :email, presence: true, uniqueness: { case_sensitive: false}, format: { with: /\A[\w]([^@\s,;]+)@(([\w-]+\.)+(com|edu|org|net|gov|mil|biz|info))\z/i, message: "is not a valid format" }
+  # validates :phone, format: { with: /\A\(?\d{3}\)?[-. ]?\d{3}[-.]?\d{4}\z/, message: "should be 10 digits (area code needed) and delimited with dashes only", allow_blank: true }
 
 
   # scopes
@@ -25,8 +26,8 @@ class Instructor < ApplicationRecord
   end
 
   # callbacks
-  before_save :reformat_phone
-  
+  before_update :if_user_is_inactive_deactivate
+  before_destroy :check_if_this_instructor_taught_past_camps
 
   # instance methods
   def name
@@ -37,11 +38,23 @@ class Instructor < ApplicationRecord
     first_name + " " + last_name
   end
 
-  private
-  def reformat_phone
-    phone = self.phone.to_s  # change to string in case input as all numbers 
-    phone.gsub!(/[^0-9]/,"") # strip all non-digits
-    self.phone = phone       # reset self.phone to new string
+  def if_user_is_inactive_deactivate
+    if !self.active
+      self.user.active = false 
+    end
+  end 
+  
+  def check_if_this_instructor_taught_past_camps
+    #unless self.camps.past.empty?
+    x = 0
+    self.camps.each {|c| x += 1 if c.end_date < Date.today }
+    if x != 0 
+      errors.add(:base, "Instructor has taught past camps")
+    else
+      self.user.active = false
+      self.camp_instructors.select{|ci| ci.camp.start_date >= Date.current}.each{|ci| ci.destroy}
+      self.user.destroy
+    end
   end
 
 end

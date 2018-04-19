@@ -17,4 +17,21 @@ class Location < ApplicationRecord
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
 
+  before_destroy :destroy1
+  
+    
+    def destroy1
+        check = true
+        self.camps.map do |camp|
+            if camp.end_date < Date.today
+                check = false 
+            end 
+        end
+        
+        if (!check)
+            errors.add(:location,"can't destroy camp")
+            throw(:abort)
+        end 
+      
+    end
 end

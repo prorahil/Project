@@ -15,6 +15,7 @@ class CampInstructorTest < ActiveSupport::TestCase
   include Contexts
   context "Within context" do
     setup do 
+      create_users
       create_curriculums
       create_active_locations
       create_instructors
@@ -23,11 +24,11 @@ class CampInstructorTest < ActiveSupport::TestCase
     end
     
     teardown do
-      delete_curriculums
-      delete_active_locations
-      delete_instructors
-      delete_camps
-      delete_camp_instructors
+      #delete_curriculums
+      #delete_active_locations
+      #delete_instructors
+      #delete_camps
+      #delete_camp_instructors
     end
 
     should "not allow the same instructor to assigned twice to the same camp" do

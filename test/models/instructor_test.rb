@@ -8,42 +8,19 @@ class InstructorTest < ActiveSupport::TestCase
   # test validations
   should validate_presence_of(:first_name)
   should validate_presence_of(:last_name)
-  should validate_presence_of(:email)
-  should validate_uniqueness_of(:email).case_insensitive
+  # should validate_presence_of(:email)
+  # should validate_uniqueness_of(:email).case_insensitive
 
-  # Validating email...
-  should allow_value("fred@fred.com").for(:email)
-  should allow_value("fred@andrew.cmu.edu").for(:email)
-  should allow_value("my_fred@fred.org").for(:email)
-  should allow_value("fred123@fred.gov").for(:email)
-  should allow_value("my.fred@fred.net").for(:email)
   
-  should_not allow_value("fred").for(:email)
-  should_not allow_value("fred@fred,com").for(:email)
-  should_not allow_value("fred@fred.uk").for(:email)
-  should_not allow_value("my fred@fred.com").for(:email)
-  should_not allow_value("fred@fred.con").for(:email)
-  
-  # Validating phone...
-  should allow_value("4122683259").for(:phone)
-  should allow_value("412-268-3259").for(:phone)
-  should allow_value("412.268.3259").for(:phone)
-  should allow_value("(412) 268-3259").for(:phone)
-  
-  should_not allow_value("2683259").for(:phone)
-  should_not allow_value("4122683259x224").for(:phone)
-  should_not allow_value("800-EAT-FOOD").for(:phone)
-  should_not allow_value("412/268/3259").for(:phone)
-  should_not allow_value("412-2683-259").for(:phone)
-
   # set up context
   context "Within context" do
-    setup do 
+    setup do
+      create_users
       create_instructors
     end
     
     teardown do
-      delete_instructors
+     # delete_instructors
     end
 
     should "show that there are three instructors in alphabetical order" do
@@ -76,9 +53,7 @@ class InstructorTest < ActiveSupport::TestCase
     end
 
     # test the callback is working 'reformat_phone'
-    should "shows that Alex's phone is stripped of non-digits" do
-      assert_equal "4122688211", @alex.phone
-    end
+
 
     should "have a class method to give array of instructors for a given camp" do
       # create additional contexts that are needed
@@ -93,6 +68,30 @@ class InstructorTest < ActiveSupport::TestCase
       delete_curriculums
       delete_active_locations
       delete_camps
+    end
+    
+    should "test a function" do
+      @tt = FactoryBot.create(:user, username: "rko", role: "parent", email: "ahmed@qatar.cmu.edu", password: "1234", password_confirmation: "1234", phone: "442-369-4000")
+      @t1 = FactoryBot.create(:instructor, first_name: "Rhl", active: false, user: @tt)
+      @t1.if_user_is_inactive_deactivate
+    end
+    
+    should "test destroy thing" do
+      @tt = FactoryBot.create(:user, username: "rko", role: "parent", email: "hmed@qatar.cmu.edu", password: "1234", password_confirmation: "1234", phone: "442-369-4000")
+      @ttt = FactoryBot.create(:instructor, first_name: "Rhlahmd", active: false, user: @tt)
+      @ttt.destroy
+    end
+    
+    should "test destroy more" do
+      create_curriculums
+      create_more_curriculums
+      create_locations
+      create_past_camps
+      
+      @t2 = FactoryBot.create(:user, username: "rkoo", role: "parent", email: "med@qatar.cmu.edu", password: "1234", password_confirmation: "1234", phone: "442-369-4000")
+      @tt2 = FactoryBot.create(:instructor, first_name: "Rhlahmd", active: true, user: @t2)
+      @c1 = FactoryBot.create(:camp_instructor, instructor: @tt2, camp: @camp10)
+      @tt2.destroy
     end
 
   end

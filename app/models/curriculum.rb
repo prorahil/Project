@@ -15,8 +15,9 @@ class Curriculum < ApplicationRecord
   scope :inactive, -> { where(active: false) }
   scope :for_rating, ->(rating) { where("min_rating <= ? and max_rating >= ?", rating, rating) }
 
-
-  private
+  before_destroy :cannot_destroy
+  before_update :active_checker
+  
   def max_rating_greater_than_min_rating
     # only testing 'greater than' in this method, so...
     return true if self.max_rating.nil? || self.min_rating.nil?
@@ -24,6 +25,24 @@ class Curriculum < ApplicationRecord
       errors.add(:max_rating, "must be greater than the minimum rating")
     end
   end
+  
+  def cannot_destroy
+      errors.add(:curriculum,"Records cannot be destroyes")
+      throw(:abort)
+  end
 
+  def active_checker 
+      counter = 0
+      self.camps.map do |count|
+        if count.start_date >= Date.today
+          count.registrations.map do |rat|
+            counter += 69
+          end 
+        end 
+      end
+      if counter > 0
+        self.active = true 
+      end 
+  end
 
 end

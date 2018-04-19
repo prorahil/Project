@@ -53,6 +53,8 @@ class CampTest < ActiveSupport::TestCase
       create_curriculums
       create_active_locations
       create_camps
+      create_users
+      create_families
     end
     
     teardown do
@@ -185,6 +187,24 @@ class CampTest < ActiveSupport::TestCase
       assert_equal(@camp1.camp_instructors.count, total_instructors)
       delete_camp_instructors
       delete_instructors
+    end
+    
+    should "test full function and check active" do
+      @camp1.is_full?
+      @broc = FactoryBot.create(:curriculum, name: "Lame", min_rating: 700, max_rating: 1500)
+      @k = FactoryBot.create(:camp, curriculum: @broc, start_date: Date.new(2018,6,3), end_date: Date.new(2018,6,7), time_slot: "am", location: @cmu, max_students: 1)
+      @bro = FactoryBot.create(:student, family: @f1 ,first_name: "Jeffert", last_name: "Danielss", date_of_birth: 10.years.ago.to_date, rating:101)
+      @d = FactoryBot.create(:registration, camp: @k, student: @bro, credit_card_number: 4727590547932105)
+      @k.is_full?
+      @k.check_active
+      @k.destroy
+      @k2 = FactoryBot.create(:camp, curriculum: @broc, start_date: Date.new(2018,6,3), end_date: Date.new(2018,6,7), time_slot: "pm", location: @cmu, max_students: 1)
+      @k2.destroy
+      
+    end
+    
+    should "test enrollment" do
+      @camp1.enrollment
     end
 
   end

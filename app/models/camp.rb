@@ -4,6 +4,8 @@ class Camp < ApplicationRecord
   belongs_to :location
   has_many :camp_instructors
   has_many :instructors, through: :camp_instructors
+  has_many :registrations
+  has_many :students, through: :registrations
 
   # validations
   validates_presence_of :location_id, :curriculum_id, :time_slot, :start_date
@@ -27,6 +29,8 @@ class Camp < ApplicationRecord
   scope :upcoming, -> { where('start_date >= ?', Date.today) }
   scope :past, -> { where('end_date < ?', Date.today) }
   scope :for_curriculum, ->(curriculum_id) { where("curriculum_id = ?", curriculum_id) }
+  scope :full, -> { joins(:registrations).group(:camp_id).having('count(*) = max_students') }
+  scope :empty, -> { joins("left join registrations on camps.id=registrations.camp_id").where("registrations.student_id is null") }
   
     # instance methods
   def name
@@ -39,6 +43,8 @@ class Camp < ApplicationRecord
 
   # callbacks
   before_update :remove_instructors_from_inactive_camp
+  before_update :check_active
+  before_destroy :check_student
 
   # private
   def curriculum_is_active_in_the_system
@@ -71,4 +77,43 @@ class Camp < ApplicationRecord
       self.camp_instructors.each{|ci| ci.destroy}
     end
   end
+  
+  def is_full?
+    count = 0
+    self.registrations.each{|c| count += 1}
+    if count < max_students
+      false
+    else
+      true 
+    end 
+  end 
+  
+  def enrollment
+    self.registrations.count 
+  end
+  
+  def check_active
+    counter = 0
+    self.registrations.each do |r|
+      counter += 1
+    end 
+    if counter > 0
+      self.active = true
+    end 
+  end 
+  
+  def check_student
+    counter = 0
+    self.registrations.each do |r|
+      counter += 1
+    end
+    if counter > 0
+      errors.add(:camp,"can't destroy record")
+      throw(:abort)
+    else
+      self.camp_instructors.map {|r| r.destroy} 
+    end 
+
+  end
+  
 end

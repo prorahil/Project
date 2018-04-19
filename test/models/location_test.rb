@@ -54,6 +54,21 @@ class LocationTest < ActiveSupport::TestCase
       assert_equal ["Squirrel Hill"], Location.inactive.all.map(&:name).sort
       delete_inactive_locations
     end
+    
+    should "test destroy method" do
+      @temp = FactoryBot.create(:curriculum, name: "Tester23", min_rating: 700, max_rating: 1500, active: true )
+      @temp2 = FactoryBot.create(:camp, curriculum: @temp, location: @north, time_slot: "pm")
+      @north.destroy1
+    end
+    
+    should "test destroy method more" do
+      @loc = FactoryBot.create(:location, name: "WTF", active: true)
+      @temp = FactoryBot.create(:curriculum, name: "Tester23", min_rating: 700, max_rating: 1500, active: true)
+      @temp34 = FactoryBot.create(:camp, curriculum: @temp, location: @loc, start_date: Date.new(2018,7,23), end_date: Date.new(2018,8,23))
+      @temp34.update_attributes(:start_date => Date.new(2017,7,23), :end_date => Date.new(2017,8,23))
+      @loc.destroy
+      assert_equal "WTF", @loc.name
+    end
 
   end
 end

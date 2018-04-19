@@ -1,4 +1,37 @@
 FactoryBot.define do
+  # factory :instructor do
+  #   first_name "MyString"
+  #   last_name "MyString"
+  #   bio "MyText"
+  #   active false
+  #   user_id 1
+  # end
+   factory :user do
+    username "MyString"
+    password_digest "MyString"
+    role "MyString"
+    email "MyString"
+    phone "MyString"
+    active true
+  end
+  factory :student do
+    first_name "MyString"
+    last_name "MyString"
+    family_id 1
+    date_of_birth "2018-04-17"
+    rating 1
+    active true
+  end
+  factory :registration do
+    camp_id 1
+    student_id 1
+  end
+  factory :family do
+    family_name "MyString"
+    parent_first_name "MyString"
+    user_id 1
+    active true
+  end
   
   factory :curriculum do
     name "Mastering Chess Tactics"
@@ -12,8 +45,6 @@ FactoryBot.define do
     first_name "Mark"
     last_name "Heimann"
     bio "Mark is currently among the top 150 players in the United States and has won 4 national scholastic chess championships."
-    phone { rand(10 ** 10).to_s.rjust(10,'0') }
-    email { |i| "#{i.first_name[0]}#{i.last_name}#{(1..99).to_a.sample}@example.com".downcase }
     active true
   end
   

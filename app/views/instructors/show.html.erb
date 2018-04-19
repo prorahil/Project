@@ -1,15 +1,29 @@
-<div class="row">
-  <div class="col s5">
-    <%= render :partial => "instructor_details" %>
-  </div>
-  <div class="col s7">
-    <%= render :partial => "partials/camps_list", locals: {camps: @upcoming_camps, state: "Upcoming"} %>
-    <%= render :partial => "partials/camps_list", locals: {camps: @past_camps, state: "Past"} unless @past_camps.empty? %>
-  </div>
-</div>
-<div class="row">
-  <div class="col s12">
-    <%= render :partial => "partials/object_options", locals: {model_name: "instructor", object: @instructor} %>
-  </div>
-</div>
+<p id="notice"><%= notice %></p>
 
+<p>
+  <strong>First name:</strong>
+  <%= @instructor.first_name %>
+</p>
+
+<p>
+  <strong>Last name:</strong>
+  <%= @instructor.last_name %>
+</p>
+
+<p>
+  <strong>Bio:</strong>
+  <%= @instructor.bio %>
+</p>
+
+<p>
+  <strong>Active:</strong>
+  <%= @instructor.active %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @instructor.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_instructor_path(@instructor) %> |
+<%= link_to 'Back', instructors_path %>

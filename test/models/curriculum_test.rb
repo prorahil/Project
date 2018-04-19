@@ -72,6 +72,34 @@ class CurriculumTest < ActiveSupport::TestCase
       assert_equal 1, Curriculum.for_rating(1400).size
       assert_equal ["Mastering Chess Tactics","Smith-Morra Gambit"], Curriculum.for_rating(600).all.map(&:name).sort
     end
-
+ 
+    should "test something" do
+      create_locations
+      create_camps
+      create_users
+      create_families
+      
+      @bruh1 = FactoryBot.create(:student, family: @f1 ,first_name: "Sania", last_name: "Fatima", date_of_birth: 10.years.ago.to_date, rating: nil, active: true)
+      @temp   = FactoryBot.create(:curriculum, name: "Tester", min_rating: 700, max_rating: 1500, active: true )
+      @temp1 = FactoryBot.create(:camp, curriculum: @temp, location: @north, time_slot: "am")
+      @temp.update_attributes(:active => false)
+      assert_equal false, @temp.active
+      @temp.active = true
+      
+      @tactics.destroy
+    end
+    
+    should "test this" do
+      create_locations
+      create_users
+      create_families
+      @bruh1 = FactoryBot.create(:student, family: @f1 ,first_name: "Sania", last_name: "Fatima", date_of_birth: 10.years.ago.to_date, rating: nil, active: true)
+      @temp   = FactoryBot.create(:curriculum, name: "Tester", min_rating: 700, max_rating: 1500, active: true )
+      @temp2 = FactoryBot.create(:camp, curriculum: @temp, location: @north, time_slot: "pm")
+      @temp3 = FactoryBot.create(:registration, camp: @temp2, student: @bruh1, credit_card_number: 4727590547932105)
+      @temp.update_attributes(:active => false)
+      assert_equal true, @temp.active
+    end
+ 
   end
 end
